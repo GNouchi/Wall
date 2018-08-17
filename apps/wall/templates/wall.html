@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <style>
+        body{
+        }
+        .messagecontainer ,.wallcontainer, h1{
+            background: white
+        }
+        .wallcontainer, .messagecontainer{
+            margin-top: 2em;
+            padding: 1em;
+        }
+        .COMMENTSSSS{
+            background:lightgreen;
+            text-indent: 4em;
+        }
+        .MESSSSSG{
+            background: salmon
+        }
+    </style>
+    <title>Hello, world!</title>
+  </head>
+  <body>
+    <div class = "container-fluid">
+<!-- start nav -->
+    <h1>{{instance}}
+        <a href="/logout" class="btn btn-danger col-sm-2 offset-sm-10"> Logout </a>
+    </h1>
+        <div class= "topdiv">
+
+        </div>
+<!-- start main -->
+        <div class = "container main">
+<!-- errors -->
+            <div>
+                {% if messages %}
+                <ul class="messages">
+                    {% for message in messages %}
+                    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+            </div>
+<!-- start message post container -->
+            <div class = "messagecontainer">
+                <form action='/message' method ='POST'>
+                    {%csrf_token%}
+                    <div class="form-group">
+                    <h3> Post a message need to make sure form action is correct!</h3>
+                        <textarea name = "userinput" class="form-control" rows="3"></textarea>
+                    </div>
+                    <input type="hidden" diabled  name ="user_id" value ="{{current_user.id}}" >
+                    <input type="hidden" diabled  name ="create_type" value ="Message" >
+                    <button type= "submit" class="btn btn-primary col-sm-2 offset-sm-10"> Post a message </button>
+                </form>
+            </div>
+
+<!-- start wall container -->
+    <div class = "wallcontainer">
+<!-- start message container -->
+ <!-- *** message loop starts here be sure to include divs correctly! -->
+    {%for x in all_messages reversed%}
+    <form action="message/destroy" method="post">
+        {%csrf_token%}
+        <input type="hidden" diabled  name ="message_id" value ="{{x.id}}" >
+        <button type="submit" class="close">Delete Message</button>
+    </form>
+        <h4> {{x.user.first_name}} - {{x.created_d}}</h4>
+        <p class = "MESSSSSG">[message here] :::::: {{x.message}} <br> 
+        delete this after dev!!!!  Message = {{x.id}} - User_id = {{x.user.id}}
+        </p>
+            
+<!-- /message text -->
+<!-- *** comment loop starts here -->
+{%for y in all_comments reversed%}
+     {%if y.message.id  == x.id%}
+    <div class = "container COMMENTSSSS">
+        <form action="comment/destroy" method="post">
+        {%csrf_token%}
+        <input type="hidden" name="comment_id" value = "{{y.id}}">
+        <button type="submit" class="close"><span aria-hidden="true">&times;</span></button>
+        </form>
+            <h6> {{y.user.first_name}} - {{y.created_d}}</h6>
+            <p>{{y.comment}}  -- comment_id is [{{y.id}}] </p>                       
+    </div>
+    <!-- /comment loop -->
+    {%endif%}
+{%endfor%}
+<!-- Comment box -->
+<div class = "container">
+        <form action='/comment' method ='POST'>
+            {%csrf_token%}
+            <div class="form-group">
+            <h5> Post a comment</h5>
+                <textarea class="form-control" name = "userinput" rows="2"></textarea>
+            </div>
+                <input type="hidden" diabled  name ="user_id" value ="{{current_user.id}}" >
+                <input type="hidden" diabled  name ="message_id" value ="{{x.id}}" >
+                <input type="hidden" diabled  name ="create_type" value ="Comment" >
+                <button type= "submit" class="btn btn-success col-sm-2 offset-sm-10"> 
+                    Post a comment
+                </button>
+        </form>
+    </div>
+
+<!-- /message loop-->
+ {%endfor%}
+
+<!-- /wallcont -->
+                </div>
+ <!--/contmain  -->
+            </div>
+<!-- /contfluid -->
+        </div>
+
+
+
+
+
+
+
+
+
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+  </body>
+</html>
